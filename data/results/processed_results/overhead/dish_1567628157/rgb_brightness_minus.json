@@ -1,0 +1,10 @@
+{
+    "analysis_id": "880c35e5-20cd-44aa-9873-18cf0b9d7cf4",
+    "scopes": [
+        "multiple_items",
+        "nutrition:macro",
+        "position",
+        "quantity"
+    ],
+    "items": []
+}
