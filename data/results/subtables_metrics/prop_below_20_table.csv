@@ -1,0 +1,15 @@
+condition,prop_below_20_calories,prop_below_20_mass,prop_below_20_fat,prop_below_20_carb,prop_below_20_protein
+overhead_rgb,0.09,0.14,0.09,0.13,0.06
+overhead_rgb_brightness_minus,0.14,0.1,0.06,0.12,0.12
+overhead_rgb_brightness_plus,0.13,0.13,0.11,0.08,0.13
+overhead_rgb_contrast_minus,0.12,0.13,0.11,0.09,0.12
+overhead_rgb_contrast_plus,0.1,0.1,0.1,0.08,0.11
+overhead_rgb_saturation_minus,0.12,0.14,0.06,0.11,0.08
+overhead_rgb_saturation_plus,0.12,0.12,0.07,0.12,0.1
+side_angle_rgb,0.1,0.08,0.08,0.1,0.12
+side_angle_rgb_brightness_minus,0.0816326530612244,0.1122448979591836,0.0408163265306122,0.0918367346938775,0.1224489795918367
+side_angle_rgb_brightness_plus,0.12,0.12,0.08,0.12,0.17
+side_angle_rgb_contrast_minus,0.1,0.1,0.08,0.09,0.14
+side_angle_rgb_contrast_plus,0.12,0.09,0.13,0.18,0.14
+side_angle_rgb_saturation_minus,0.0808080808080808,0.0707070707070707,0.0808080808080808,0.1414141414141414,0.1616161616161616
+side_angle_rgb_saturation_plus,0.1,0.13,0.09,0.12,0.12
