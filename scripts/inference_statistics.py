@@ -1,10 +1,10 @@
 import pandas as pd
 import numpy as np
-from scipy.stats import ttest_1samp, wilcoxon
+from scipy.stats import ttest_1samp
 
 # Load the dataset
 input_csv = "data/results/nutrition_evaluation.csv"
-output_csv = "data/results/statistical_tests_abs_diff_calories.csv"
+output_csv = "data/results/statistical_tests_calories.csv"
 df = pd.read_csv(input_csv)
 
 # Rename columns for clarity
@@ -22,45 +22,67 @@ conditions = ["rgb", "rgb_brightness_minus", "rgb_brightness_plus",
 # Results container
 results = []
 
-# Test each condition
+# Perform the one-sample t-tests for all comparisons
 for supercondition in superconditions:
     for condition in conditions:
-        test_result = {
-            "condition": f"{supercondition}_{condition}",
-            "p_value_abs_diff_ttest": None,
-            "mean_abs_diff": None,
-            "p_value_abs_diff_wilcoxon": None,
-            "median_abs_diff": None
-        }
+        condition_name = f"{supercondition}_{condition}"
+        predicted_col = f"{condition_name}_calories"
+        test_result = {"condition": condition_name}
 
-        # Get the predicted calories column
-        predicted_col = f"{supercondition}_{condition}_calories"
+        # Ground Truth Comparison
         if predicted_col in df.columns and ground_truth_col in df.columns:
-            # Drop rows with NaN values
             valid_data = df[[ground_truth_col, predicted_col]].dropna()
-            aligned_gt = valid_data[ground_truth_col]
-            aligned_pred = valid_data[predicted_col]
+            ground_truth = valid_data[ground_truth_col]
+            predictions = valid_data[predicted_col]
+            abs_differences = np.abs(predictions - ground_truth)
 
-            if len(aligned_gt) > 1:  # Ensure sufficient data points
-                abs_diff = np.abs(aligned_pred - aligned_gt)
+            if len(abs_differences) > 1:  # Ensure sufficient data points
+                t_stat, p_value = ttest_1samp(abs_differences, 0)
+                mean_abs_diff = np.mean(abs_differences)
+                test_result["p_value_ground_truth"] = p_value
+                test_result["mean_absolute_difference_ground_truth"] = mean_abs_diff
+            else:
+                test_result["p_value_ground_truth"] = None
+                test_result["mean_absolute_difference_ground_truth"] = None
 
-                # Perform one-sample t-test on absolute differences
-                t_stat, p_value_ttest = ttest_1samp(abs_diff, 0)
-                mean_abs_diff = np.mean(abs_diff)
+        # Counterpart Comparison
+        counterpart_condition = (
+            f"overhead_{condition}" if supercondition == "side_angle" else f"side_angle_{condition}"
+        )
+        counterpart_col = f"{counterpart_condition}_calories"
+        if counterpart_col in df.columns and predicted_col in df.columns:
+            valid_data = df[[predicted_col, counterpart_col]].dropna()
+            predictions = valid_data[predicted_col]
+            counterpart_predictions = valid_data[counterpart_col]
+            abs_differences = np.abs(predictions - counterpart_predictions)
 
-                # Perform Wilcoxon Signed-Rank Test on absolute differences
-                if len(abs_diff) >= 10:  # Wilcoxon requires more than a few samples
-                    t_stat_wilcoxon, p_value_wilcoxon = wilcoxon(abs_diff)
-                    median_abs_diff = np.median(abs_diff)
-                else:
-                    p_value_wilcoxon, median_abs_diff = None, None
+            if len(abs_differences) > 1:  # Ensure sufficient data points
+                t_stat, p_value = ttest_1samp(abs_differences, 0)
+                mean_abs_diff = np.mean(abs_differences)
+                test_result["p_value_counterpart"] = p_value
+                test_result["mean_absolute_difference_counterpart"] = mean_abs_diff
+            else:
+                test_result["p_value_counterpart"] = None
+                test_result["mean_absolute_difference_counterpart"] = None
 
-                # Store results
-                test_result["p_value_abs_diff_ttest"] = p_value_ttest
-                test_result["mean_abs_diff"] = mean_abs_diff
-                test_result["p_value_abs_diff_wilcoxon"] = p_value_wilcoxon
-                test_result["median_abs_diff"] = median_abs_diff
+        # Base Condition Comparison
+        base_condition_col = f"{supercondition}_rgb_calories"
+        if predicted_col != base_condition_col and base_condition_col in df.columns:
+            valid_data = df[[predicted_col, base_condition_col]].dropna()
+            predictions = valid_data[predicted_col]
+            base_predictions = valid_data[base_condition_col]
+            abs_differences = np.abs(predictions - base_predictions)
 
+            if len(abs_differences) > 1:  # Ensure sufficient data points
+                t_stat, p_value = ttest_1samp(abs_differences, 0)
+                mean_abs_diff = np.mean(abs_differences)
+                test_result["p_value_base_condition"] = p_value
+                test_result["mean_absolute_difference_base_condition"] = mean_abs_diff
+            else:
+                test_result["p_value_base_condition"] = None
+                test_result["mean_absolute_difference_base_condition"] = None
+
+        # Append the results for the current condition
         results.append(test_result)
 
 # Convert results to a DataFrame
@@ -68,4 +90,5 @@ results_df = pd.DataFrame(results)
 
 # Save the results to CSV
 results_df.to_csv(output_csv, index=False)
-print(f"Statistical test results for absolute differences saved to {output_csv}")
+
+print(f"Statistical test results saved to {output_csv}")

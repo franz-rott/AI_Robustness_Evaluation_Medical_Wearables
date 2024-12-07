@@ -3,9 +3,9 @@ import os
 import numpy as np
 
 # Adjust these values to change the percentage for brightness, contrast, and saturation modifications
-brightness_change = 0.2  # 10%
-contrast_change = 0.2    # 10%
-saturation_change = 0.2  # 10%
+brightness_change = 0.2  
+contrast_change = 0.2    
+saturation_change = 0.2  
 
 def adjust_brightness(image, factor):
     # Clip to avoid overflow after adjustment
