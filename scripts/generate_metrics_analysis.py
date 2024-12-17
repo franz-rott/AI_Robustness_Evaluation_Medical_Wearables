@@ -10,7 +10,7 @@ output_csv = "data/results/metrics_analysis.csv"
 df = pd.read_csv(input_csv)
 
 # Ground truth columns
-ground_truth_cols = ["calories", "mass", "fat", "carb", "protein"]
+ground_truth_cols = ["calories_x", "mass", "fat", "carb", "protein"]
 
 # Initialize a list for results
 results = []
@@ -39,9 +39,9 @@ for supercondition in superconditions:
 
                 if len(ground_truth) > 0:
                     # Calculate metrics
-                    mae = np.mean(np.abs(predictions - ground_truth))
-                    mape = np.mean(np.abs((predictions - ground_truth) / ground_truth)) * 100
-                    prop_below_20 = np.mean(np.abs((predictions - ground_truth) / ground_truth) < 0.2)
+                    mae = np.mean(np.abs(ground_truth - predictions))
+                    mape = np.mean(np.abs((ground_truth - predictions) / ground_truth)) * 100
+                    prop_below_20 = np.mean(np.abs((ground_truth - predictions) / ground_truth) < 0.2)
                     avg_error = np.mean(predictions - ground_truth)
                     avg_rel_error = np.mean((predictions - ground_truth) / ground_truth) * 100
                 else:
