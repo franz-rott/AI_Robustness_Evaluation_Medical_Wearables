@@ -82,9 +82,6 @@ def process_supercondition(supercondition):
 overhead_df = process_supercondition("overhead")
 side_angle_df = process_supercondition("side_angle")
 
-# Save intermediate DataFrames for debugging
-overhead_df.to_csv("debug_overhead.csv", index=False)
-side_angle_df.to_csv("debug_side_angle.csv", index=False)
 
 # Trim whitespace in dish_id
 overhead_df["dish_id"] = overhead_df["dish_id"].str.strip()
@@ -93,12 +90,10 @@ side_angle_df["dish_id"] = side_angle_df["dish_id"].str.strip()
 # Merge overhead and side_angle with metadata
 print("Merging metadata with overhead data...")
 overhead_merged = metadata.merge(overhead_df, on="dish_id", how="inner")
-overhead_merged.to_csv("debug_overhead_merged.csv", index=False)
 print(overhead_merged.head())
 
 print("Merging metadata with side_angle data...")
 side_angle_merged = metadata.merge(side_angle_df, on="dish_id", how="inner")
-side_angle_merged.to_csv("debug_side_angle_merged.csv", index=False)
 print(side_angle_merged.head())
 
 # Merge all data
