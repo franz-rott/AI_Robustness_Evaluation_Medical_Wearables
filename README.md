@@ -1,93 +1,179 @@
-# IoMT
+# Nutrition Analysis and Image Processing Repository
 
+This repository contains tools and scripts for processing images, analyzing nutrition data, generating metrics, and visualizing results. It integrates image preprocessing, API requests for nutrition analysis, and statistical evaluations.
 
+## Table of Contents
+- [Project Structure](#project-structure)
+- [Features](#features)
+- [Setup](#setup)
+- [Usage](#usage)
+  - [Preprocessing Images](#preprocessing-images)
+  - [Running API Requests](#running-api-requests)
+  - [Generating Nutrition Data](#generating-nutrition-data)
+  - [Analyzing Metrics](#analyzing-metrics)
+  - [Visualizing Results](#visualizing-results)
+- [Scripts Overview](#scripts-overview)
+- [Dependencies](#dependencies)
+- [License](#license)
 
-## Getting started with the project
+---
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
+## Project Structure
 ```
-cd existing_repo
-git remote add origin https://gitlab.uni-ulm.de/idp14/iomt.git
-git branch -M main
-git push -uf origin main
+.
+├── data
+│   ├── raw
+│   │   ├── side_angle
+│   │   └── overhead
+│   └── results
+│       ├── processed_results
+│       ├── metrics_analysis.csv
+│       ├── heatmaps_metrics
+│       └── heatmaps_nutrients
+├── demo
+│   ├── 01_compress_images.py
+│   ├── 02_preprocess_images.py
+│   ├── 03_run_api_requests.py
+│   └── 04_generate_nutrition_csv.py
+├── scripts
+│   ├── analyze_nutrition_metrics.py
+│   ├── generate_metrics_analysis.py
+│   ├── generate_nutrition_csv.py
+│   ├── generate_nutrition_heatmaps.py
+│   ├── inference_statistics.py
+│   ├── run_api_requests.py
+│   └── visualize_metrics.py
+├── src
+│   ├── data_preprocessing
+│   │   ├── compress_images.py
+│   │   ├── extract_first_frame.py
+│   │   └── preprocess_images.py
+│   └── utils
+│       ├── api_connector.py
+├── helper.py
+└── README.md
 ```
 
-## Integrate with your tools
+---
 
-- [ ] [Set up project integrations](https://gitlab.uni-ulm.de/idp14/iomt/-/settings/integrations)
+## Features
+1. **Image Preprocessing**
+   - Compress images to a specified size.
+   - Extract frames from video files.
+   - Generate image variations with adjusted brightness, contrast, and saturation.
 
-## Collaborate with your team
+2. **API Integration**
+   - Analyze images using the Foodvisor API.
+   - Save API responses in JSON format.
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+3. **Nutrition Analysis**
+   - Generate nutrition evaluation datasets.
+   - Calculate metrics such as MAE, MAPE, and Proportion Below 20%.
+   - Perform statistical tests on predictions.
 
-## Test and Deploy
+4. **Visualization**
+   - Generate heatmaps for metrics and nutrients.
+   - Plot statistical differences between predictions and ground truth.
 
-Use the built-in continuous integration in GitLab.
+---
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+## Setup
 
-***
+### Prerequisites
+Ensure you have the following installed:
+- Python 3.8 or higher
+- pip (Python package manager)
 
-# Editing this README
+### Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-repo.git
+   cd your-repo
+   ```
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+3. Update the API key in `src/utils/api_connector.py`.
 
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+---
 
 ## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+### Preprocessing Images
+Use the script `01_compress_images.py` to compress images or `02_preprocess_images.py` to generate image variations:
+```bash
+python demo/01_compress_images.py
+python demo/02_preprocess_images.py
+```
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+### Running API Requests
+Analyze images using the Foodvisor API:
+```bash
+python demo/03_run_api_requests.py
+```
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+### Generating Nutrition Data
+Combine API results and metadata to generate a comprehensive dataset:
+```bash
+python demo/04_generate_nutrition_csv.py
+```
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+### Analyzing Metrics
+Compute metrics such as MAE, MAPE, and Prop<20%:
+```bash
+python scripts/generate_metrics_analysis.py
+```
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+### Visualizing Results
+Generate heatmaps for metrics and nutrients:
+```bash
+python scripts/generate_nutrition_heatmaps.py
+```
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+---
+
+## Scripts Overview
+
+### `helper.py`
+Utility script to aggregate content from Python files within a directory into a single text file.
+
+### `demo`
+Scripts for basic image compression, preprocessing, API requests, and generating nutrition CSVs.
+
+### `scripts`
+Contains analysis and visualization scripts:
+- `analyze_nutrition_metrics.py`: Generates sub-tables for metrics and nutrients.
+- `generate_metrics_analysis.py`: Computes metrics like MAE, MAPE, and Prop<20%.
+- `generate_nutrition_heatmaps.py`: Creates heatmaps for metrics and nutrients.
+- `inference_statistics.py`: Performs statistical tests on predictions.
+- `visualize_metrics.py`: Visualizes metrics with heatmaps.
+
+### `src`
+Core functionality:
+- `data_preprocessing`: Scripts for image compression, frame extraction, and image variations.
+- `utils`: API connector for sending images and saving results.
+
+---
+
+## Dependencies
+
+The repository relies on the following Python libraries:
+- `numpy`
+- `pandas`
+- `opencv-python`
+- `Pillow`
+- `matplotlib`
+- `seaborn`
+- `requests`
+
+Install them using:
+```bash
+pip install -r requirements.txt
+```
+
+---
 
 ## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+This project is licensed under the MIT License. See the `LICENSE` file for details.
