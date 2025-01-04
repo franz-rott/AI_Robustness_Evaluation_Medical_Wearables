@@ -1,28 +1,39 @@
+# .\demo\04_generate_nutrition_csv.py
+
 import os
 import pandas as pd
 import json
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Define paths
+# Paths for JSON folder and final output
 json_folder = "demo/data/results/processed_results"
 final_output_csv = "demo/data/results/nutrition_evaluation.csv"
 
-# Superconditions and conditions
+# Superconditions and conditions of interest
 superconditions = ["overhead", "side_angle"]
-conditions = ["rgb", "rgb_brightness_minus", "rgb_brightness_plus", 
-              "rgb_contrast_minus", "rgb_contrast_plus", 
-              "rgb_saturation_minus", "rgb_saturation_plus"]
+conditions = [
+    "rgb", 
+    "rgb_brightness_minus", 
+    "rgb_brightness_plus", 
+    "rgb_contrast_minus", 
+    "rgb_contrast_plus", 
+    "rgb_saturation_minus", 
+    "rgb_saturation_plus"
+]
 
-# Function to process a single supercondition
 def process_supercondition(supercondition):
+    """
+    Reads JSON files for each condition under a specific supercondition (overhead/side_angle),
+    aggregates total calories, and returns a DataFrame of results.
+    """
     supercondition_path = os.path.join(json_folder, supercondition)
     results = []
 
     if os.path.exists(supercondition_path):
         for dish_folder in os.listdir(supercondition_path):
             dish_path = os.path.join(supercondition_path, dish_folder)
-            dish_id = dish_folder.strip()  # Trim any whitespace
+            dish_id = dish_folder.strip()
 
             dish_data = {"dish_id": dish_id}
             for condition in conditions:
@@ -32,7 +43,7 @@ def process_supercondition(supercondition):
                         with open(json_file, 'r') as f:
                             json_data = json.load(f)
 
-                        # Aggregate nutrition data for items with confidence > 0.5
+                        # Aggregate total calories for items with confidence > 0.5
                         total_calories = 0
                         for item in json_data.get("items", []):
                             for food in item.get("food", []):
@@ -42,7 +53,6 @@ def process_supercondition(supercondition):
 
                                     total_calories += (nutrition.get("calories_100g", 0) * quantity) / 100
 
-                        # Store aggregated values
                         dish_data[f"{supercondition}_{condition}_calories"] = total_calories
 
                     except json.JSONDecodeError:
@@ -56,26 +66,29 @@ def process_supercondition(supercondition):
 
     return pd.DataFrame(results)
 
-# Process both superconditions
+# Process overhead and side_angle
 overhead_df = process_supercondition("overhead")
 side_angle_df = process_supercondition("side_angle")
 
-# Trim whitespace in dish_id
+# Trim whitespace in dish_ids
 overhead_df["dish_id"] = overhead_df["dish_id"].str.strip()
 side_angle_df["dish_id"] = side_angle_df["dish_id"].str.strip()
 
-# Merge all data
+# Merge both DataFrames
 print("Merging all data...")
 final_df = side_angle_df.merge(overhead_df, on="dish_id", how="inner")
 print("Final DataFrame:")
 print(final_df.head())
 
-# Save final DataFrame to CSV
+# Save to CSV
 final_df.to_csv(final_output_csv, index=False)
 print(f"Final nutrition evaluation saved to {final_output_csv}")
 
-# Generate table with conditions as rows and superconditions as columns
 def create_summary_table(df):
+    """
+    Creates a summary table for the average calories for each condition
+    across overhead and side_angle.
+    """
     summary_data = []
     for condition in conditions:
         row = {
@@ -91,7 +104,7 @@ summary_table = create_summary_table(final_df)
 print("\nSummary Table:")
 print(summary_table)
 
-# Visualize the summary table as a heatmap
+# Plot a heatmap of the summary
 plt.figure(figsize=(10, 6))
 summary_heatmap = summary_table.set_index("Condition").rename(columns={
     "Overhead Calories": "Overhead",
@@ -101,7 +114,7 @@ sns.heatmap(summary_heatmap, annot=True, cmap="coolwarm", fmt=".2f")
 plt.title("Average Calories Across Conditions and Superconditions")
 plt.show()
 
-# Export to a new Excel file with two tabs
+# Save the data to an Excel file with two sheets
 output_excel = "demo/data/results/nutrition_evaluation_summary.xlsx"
 with pd.ExcelWriter(output_excel, engine='xlsxwriter') as writer:
     final_df.to_excel(writer, sheet_name='Full Data', index=False)

@@ -1,7 +1,9 @@
+# .\scripts\analyze_nutrition_metrics.py
+
 import pandas as pd
 import os
 
-# Load the constructed CSV
+# Load the constructed CSV containing aggregated metrics
 csv_input_path = os.path.join("data", "results", "metrics_analysis.csv")
 output_dir_metrics = os.path.join("data", "results", "subtables_metrics")
 output_dir_nutrients = os.path.join("data", "results", "subtables_nutrients")
@@ -13,7 +15,7 @@ os.makedirs(output_dir_nutrients, exist_ok=True)
 # Load the data
 df = pd.read_csv(csv_input_path)
 
-# Define metrics and the columns that belong to each metric
+# Define metric types and find corresponding columns in the DataFrame
 metrics = {
     "mae": [col for col in df.columns if "mae_" in col],
     "mape": [col for col in df.columns if "mape_" in col],
@@ -22,7 +24,7 @@ metrics = {
     "avg_rel_error": [col for col in df.columns if "avg_rel_error_" in col]
 }
 
-# Define nutrient criteria and the columns that belong to each nutrient
+# Define nutrient types and find corresponding columns
 nutrients = {
     "calories": [col for col in df.columns if "calories" in col],
     "mass": [col for col in df.columns if "mass" in col],
@@ -31,14 +33,14 @@ nutrients = {
     "protein": [col for col in df.columns if "protein" in col]
 }
 
-# Save sub-tables for each metric
+# Create sub-tables for each metric
 for metric_name, metric_cols in metrics.items():
     metric_df = df[["condition"] + metric_cols]
     metric_output_path = os.path.join(output_dir_metrics, f"{metric_name}_table.csv")
     metric_df.to_csv(metric_output_path, index=False)
     print(f"Saved {metric_name} table to {metric_output_path}")
 
-# Save sub-tables for each nutrient criterion
+# Create sub-tables for each nutrient
 for nutrient_name, nutrient_cols in nutrients.items():
     nutrient_df = df[["condition"] + nutrient_cols]
     nutrient_output_path = os.path.join(output_dir_nutrients, f"{nutrient_name}_table.csv")
