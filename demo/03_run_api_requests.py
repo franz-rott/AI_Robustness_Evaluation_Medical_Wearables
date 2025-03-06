@@ -12,8 +12,8 @@ from src.utils.api_connector import process_image
 
 # Define folder paths for overhead and side_angle images
 image_dirs = [
-    os.path.normpath('demo/data/final/side_angle/'),
-    os.path.normpath('demo/data/final/overhead/')
+    os.path.normpath('demo/data/final/overhead/'),
+    os.path.normpath('demo/data/final/side_angle/')
 ]
 
 for image_dir in image_dirs:

@@ -13,7 +13,7 @@ df = pd.read_csv(input_csv)
 
 # For convenience, rename the columns containing ground truth
 # (Here assuming 'calories_x' is the ground truth for calories, etc.)
-ground_truth_cols = ["calories_x", "mass", "fat", "carb", "protein"]
+ground_truth_cols = ["calories", "mass", "fat", "carb", "protein"]
 
 # Prepare a list to accumulate results
 results = []

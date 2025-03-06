@@ -1,5 +1,3 @@
-# .\demo\04_generate_nutrition_csv.py
-
 import os
 import pandas as pd
 import json
@@ -25,7 +23,7 @@ conditions = [
 def process_supercondition(supercondition):
     """
     Reads JSON files for each condition under a specific supercondition (overhead/side_angle),
-    aggregates total calories, and returns a DataFrame of results.
+    aggregates total calories by taking the most likely food per position, and returns a DataFrame of results.
     """
     supercondition_path = os.path.join(json_folder, supercondition)
     results = []
@@ -43,15 +41,28 @@ def process_supercondition(supercondition):
                         with open(json_file, 'r') as f:
                             json_data = json.load(f)
 
-                        # Aggregate total calories for items with confidence > 0.5
+                        # Aggregate total calories by selecting the most likely food per position
                         total_calories = 0
                         for item in json_data.get("items", []):
-                            for food in item.get("food", []):
-                                if food.get("confidence", 0) > 0.5:
-                                    nutrition = food.get("food_info", {}).get("nutrition", {})
-                                    quantity = food.get("quantity", 0)
+                            foods = item.get("food", [])
+                            if not foods:
+                                continue  # Skip if no food items
 
-                                    total_calories += (nutrition.get("calories_100g", 0) * quantity) / 100
+                            # Select the food with the highest confidence
+                            top_food = max(foods, key=lambda x: x.get("confidence", 0))
+
+                            # Extract nutrition and quantity
+                            nutrition = top_food.get("food_info", {}).get("nutrition", {})
+                            quantity = top_food.get("quantity", 0)
+
+                            # Ensure calories_100g is present and valid
+                            calories_per_100g = nutrition.get("calories_100g", 0)
+                            if calories_per_100g is None:
+                                calories_per_100g = 0
+
+                            # Calculate calories
+                            calories = (calories_per_100g * quantity) / 100
+                            total_calories += calories
 
                         dish_data[f"{supercondition}_{condition}_calories"] = total_calories
 
@@ -114,10 +125,12 @@ sns.heatmap(summary_heatmap, annot=True, cmap="coolwarm", fmt=".2f")
 plt.title("Average Calories Across Conditions and Superconditions")
 plt.show()
 
-# Save the data to an Excel file with two sheets
-output_excel = "demo/data/results/nutrition_evaluation_summary.xlsx"
-with pd.ExcelWriter(output_excel, engine='xlsxwriter') as writer:
-    final_df.to_excel(writer, sheet_name='Full Data', index=False)
-    summary_table.to_excel(writer, sheet_name='Summary Table', index=False)
+# Save the full dataset to CSV
+full_data_csv = "demo/data/results/nutrition_evaluation_full.csv"
+final_df.to_csv(full_data_csv, index=False)
+print(f"Full data saved to {full_data_csv}")
 
-print(f"Nutrition evaluation with summary saved to {output_excel}")
+# Save the summary table to CSV
+summary_table_csv = "demo/data/results/nutrition_evaluation_summary.csv"
+summary_table.to_csv(summary_table_csv, index=False)
+print(f"Summary table saved to {summary_table_csv}")
