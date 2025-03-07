@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 # Replace with your actual API key
-API_KEY = "t9LoOWu1.wJgxTb2EYOIkjePAcAC2zYTRBU0XE4Q9"
+API_KEY = ""
 API_URL = "https://vision.foodvisor.io/api/1.0/en/analysis/"
 HEADERS = {"Authorization": f"Api-Key {API_KEY}"}
 
